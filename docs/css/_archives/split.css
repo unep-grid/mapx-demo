@@ -1,0 +1,41 @@
+.main-grid {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  position: relative;
+}
+
+.main-grid.grid-2x2 {
+  grid-template-rows: 1fr 10px 1fr;
+  grid-template-columns: 1fr 10px 1fr;
+}
+
+.main-grid.grid-1x3 {
+  grid-template-columns: 1fr 10px 1fr 10px 1fr;
+}
+
+.main-gutter-col,
+.main-gutter-row {
+  z-index: 2;
+  background: blue;
+}
+
+.main-gutter-col {
+  grid-row: 1/-1;
+  cursor: col-resize;
+}
+
+.main-gutter-col-1 {
+  grid-column: 2;
+  border: 1px solid red;
+}
+
+.main-gutter-row {
+  grid-column: 1/-1;
+  cursor: row-resize;
+}
+
+.main-gutter-row-1 {
+  grid-row: 2;
+  border: 1px solid red;
+}

@@ -1,0 +1,16 @@
+.ctrls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.ctrl {
+  display: block;
+  width: 200px;
+  height: 200px;
+  background: #ccc;
+  border-radius: 30px;
+  cursor: grab;
+  position: relative;
+}
