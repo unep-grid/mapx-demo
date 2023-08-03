@@ -1,6 +1,11 @@
+/**
+* This script was written to change base path of links, before
+* publishing to github.
+*/ 
 import fs from "fs/promises";
 import path from "path";
 import { JSDOM } from "jsdom";
+
 
 const config = {
   basePath: "/mapx-demo",
@@ -27,16 +32,21 @@ async function processHTML(fullPath, destPath) {
 }
 
 async function processJS(fullPath, destPath) {
+  let contents = await fs.readFile(fullPath, 'utf-8');
+  
+  contents = contents.replace(/import\s+.*from\s+"(\/(?!http).*?)"/g, (match, p1) => {
+    // Only modify paths that are relative to the root
+    return match.replace(p1, `${config.basePath}${p1}`);
+  });
+
+  await fs.writeFile(destPath, contents, 'utf-8');
+}
+
+async function processCSS(fullPath, destPath) {
   let contents = await fs.readFile(fullPath, "utf-8");
   contents = contents.replace(
-    /import\s+.*from\s+"(\.?\/?(?!http).*?)"/g,
-    (match, p1) => {
-      let relativePath = p1;
-      if (relativePath.startsWith("./")) {
-        relativePath = relativePath.substring(1); // Remove the dot if it starts with ./
-      }
-      return match.replace(p1, `${config.basePath}${relativePath}`);
-    }
+    /url\(\"\/(?!http)/g,
+    `url(\"${config.basePath}/`
   );
   await fs.writeFile(destPath, contents, "utf-8");
 }
@@ -57,6 +67,9 @@ async function updateFilePaths(srcDir, destDir) {
           return processHTML(fullPath, destPath);
         case ".js":
           return processJS(fullPath, destPath);
+        case ".css":
+          return processCSS(fullPath, destPath);
+
         default:
           // If it's a different file type, just copy it
           return fs.copyFile(fullPath, destPath);

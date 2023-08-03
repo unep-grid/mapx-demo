@@ -1,6 +1,6 @@
 import * as noUiSlider from "https://unpkg.com/nouislider@15.7.0/dist/nouislider.mjs";
 import TomSelect from "https://unpkg.com/tom-select@2.2.2/dist/esm/tom-select.complete.js";
-import { AnimationButton } from "/mapx-demo/animation_button.js";
+import { AnimationButton } from "./animation_button.js";
 import { Manager } from "https://app.mapx.org/sdk/mxsdk.modern.js";
 
 const idView = "MX-JZE39-E53LZ-0IIHP"; // somalia acled 2017
