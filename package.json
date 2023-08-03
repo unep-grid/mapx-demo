@@ -1,0 +1,29 @@
+{
+  "name": "mapx-demo",
+  "version": "0.0.1",
+  "description": "mapx sdk demo project",
+  "main": "build.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "type":"module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node ./build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unep-grid/mapx-demo.git"
+  },
+  "keywords": [
+    "mapx",
+    "demo",
+    "sdk"
+  ],
+  "author": "unepgrid.ch",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/unep-grid/mapx-demo/issues"
+  },
+  "homepage": "https://github.com/unep-grid/mapx-demo#readme"
+}
