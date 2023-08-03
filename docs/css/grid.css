@@ -1,0 +1,17 @@
+.gutter-col {
+  grid-row: 1/-1;
+  cursor: col-resize;
+  background-image: url("/img/split-vertical.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #f2f2f2;
+}
+
+.gutter-row {
+  grid-column: 1/-1;
+  cursor: row-resize;
+  background-image: url("/img/split-horizontal.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #f2f2f2;
+}

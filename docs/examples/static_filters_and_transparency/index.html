@@ -1,0 +1,64 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/mapx-demo/css/style.css">
+    <link rel="stylesheet" href="/mapx-demo/css/grid.css">
+    <link rel="stylesheet" href="/mapx-demo/css/grid-1x2.css">
+    <link rel="stylesheet" href="https://unpkg.com/nouislider@15.7.0/dist/nouislider.min.css">
+    <link href="
+https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.min.css
+" rel="stylesheet">
+
+    <script type="module" src="/mapx-demo/js/grid-1x2.js"></script>
+    <title>MAPX SDK</title>
+  </head>
+  <body>
+    <header>
+      <h1>Filters &amp; Transparency</h1>
+      <h2>
+        Applying and Animating Filters and Transparency to View Layers
+      </h2>
+      <p></p>
+    </header>
+    <main class="grid">
+      <div class="padding">
+        <!--opacity-->
+        <div class="input-group">
+          <label for="setOpacity">Set opacity <span id="resOpacity">100%</span>
+          </label>
+          <div id="setOpacity"></div>
+        </div>
+        <!--time-->
+        <div class="input-group">
+          <label for="setTime">
+            <button class="button-reset" id="btnAnimTime"></button>
+            <span>Dates:</span>
+            <span id="resTime"></span>
+          </label>
+          <div id="setTime"></div>
+        </div>
+        <!--numeric-->
+        <div class="input-group">
+          <label for="setNumeric">Fatalities <span id="resNumeric"></span>
+          </label>
+          <div id="setNumeric"></div>
+        </div>
+        <!--text-->
+        <div class="input-group">
+          <label for="setText">Set text n=<span id="resText">0</span> </label>
+          <select id="setText" placeholder="Search" multiple="" autocomplete="off"></select>
+        </div>
+      </div>
+      <div class="gutter-col gutter-col-1"></div>
+      <div id="mapx" class="mapx"></div>
+    </main>
+    <footer>
+      <a href="index.js" target="_blank">Source</a>
+      <a href="/mapx-demo/index.html">Home</a>
+      <a href="http://mapx.org" target="_blank">mapx.org</a>
+    </footer>
+    <script type="module" src="index.js"></script>
+  
+
+</body></html>

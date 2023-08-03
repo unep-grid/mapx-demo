@@ -1,0 +1,10 @@
+.events-list {
+  overflow-y: auto;
+  flex-grow: 1;
+  min-height: 1px;
+  background: black;
+  color: lime;
+  font-family: monospace;
+  margin: 0;
+  padding: 20px;
+}
