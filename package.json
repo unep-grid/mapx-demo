@@ -2,14 +2,14 @@
   "name": "mapx-demo",
   "version": "0.0.1",
   "description": "mapx sdk demo project",
-  "main": "build.js",
   "directories": {
     "doc": "docs"
   },
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node ./build.js"
+    "build": "echo \"Build step done with github action.\"",
+    "dev": "live-server ./src"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/unep-grid/mapx-demo#readme",
   "dependencies": {
-    "jsdom": "^22.1.0"
+    "jsdom": "^22.1.0",
+    "live-server": "^1.2.2"
   }
 }

@@ -1,16 +1,15 @@
 /**
-* This script was written to change base path of links, before
-* publishing to github.
+* This script was written to change the base path of links before
+* publishing to GitHub.
 */ 
 import fs from "fs/promises";
 import path from "path";
 import { JSDOM } from "jsdom";
 
-
 const config = {
   basePath: "/mapx-demo",
-  srcFolder: "./src",
-  destFolder: "./docs",
+  srcFolder: "/src",
+  destFolder: "/docs",
 };
 
 async function processHTML(fullPath, destPath) {
@@ -32,14 +31,14 @@ async function processHTML(fullPath, destPath) {
 }
 
 async function processJS(fullPath, destPath) {
-  let contents = await fs.readFile(fullPath, 'utf-8');
+  let contents = await fs.readFile(fullPath, "utf-8"); // Changed quotation marks
   
   contents = contents.replace(/import\s+.*from\s+"(\/(?!http).*?)"/g, (match, p1) => {
     // Only modify paths that are relative to the root
     return match.replace(p1, `${config.basePath}${p1}`);
   });
 
-  await fs.writeFile(destPath, contents, 'utf-8');
+  await fs.writeFile(destPath, contents, "utf-8");
 }
 
 async function processCSS(fullPath, destPath) {
