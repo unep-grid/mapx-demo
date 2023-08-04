@@ -1,10 +1,45 @@
 import { MapSync } from "./mapsync.js";
 import { color_light as style } from "./mapbox_style.js";
+import { updateURL } from "./helpers.js";
 
-const tileLayer =
-  "https://datacore.unepgrid.ch/geoserver/wms?bbox={bbox-epsg-3857}&service=WMS&version=1.1.1&styles=&request=getMap&ZINDEX=10&EXCEPTIONS=application%2Fvnd.ogc.se_blank&srs=EPSG%3A3857&layers={layer}&format=image%2Fpng&transparent=true&height=512&width=512";
+const endpoint = "https://datacore.unepgrid.ch/geoserver/wms";
 
+/** 
+*  1: red
+*  2: green
+*  3: blue
+*  4: nir
+*  5: swir1
+*  6: swir2
+*  7: surface_temperature
+*  8: coastal_aerosol (Landsat 8 et 9 uniquement)
+*  const envOrig = {
+*    B1: 6,
+*    B2: 4,
+*    B3: 1,
+*  };
+*/ 
 
+const params = {
+  SERVICE: "WMS",
+  VERSION: "1.1.1",
+  REQUEST: "GetMap",
+  FORMAT: "image/png",
+  TRANSPARENT: "true",
+  STYLES: "",
+  LAYERS: "{layer}",
+  SRS: "EPSG:3857",
+  WIDTH: "512",
+  HEIGHT: "512",
+  BBOX: "{bbox-epsg-3857}",
+  ENV: {
+    B1: 6,
+    B2: 4,
+    B3: 5,
+  },
+};
+
+const tileLayer = updateURL(endpoint, params);
 
 
 const synchronizerConfig = {

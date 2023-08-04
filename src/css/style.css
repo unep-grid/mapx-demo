@@ -21,7 +21,7 @@ main {
   /*when main isn't a grid : nested grid*/
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  /*overflow: hidden;*/
   position: relative;
 }
 

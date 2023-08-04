@@ -1,12 +1,49 @@
 import { MapSync } from "./mapsync.js";
 import { color_light as style } from "./mapbox_style.js";
+import { updateURL } from "./helpers.js";
 
-const tileLayer =
-  "https://datacore.unepgrid.ch/geoserver/hotspots/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&STYLES&ENV=B1%3A6%3BB2%3A4%3BB3%3A1&LAYERS={layer}&exceptions=application%2Fvnd.ogc.se_inimage&SRS=EPSG%3A3857&WIDTH=512&HEIGHT=512&BBOX={bbox-epsg-3857}";
+const endpoint = "https://datacore.unepgrid.ch/geoserver/hotspots/wms";
+
+/** 
+*  1: red
+*  2: green
+*  3: blue
+*  4: nir
+*  5: swir1
+*  6: swir2
+*  7: surface_temperature
+*  8: coastal_aerosol (Landsat 8 et 9 uniquement)
+*  const envOrig = {
+*    B1: 6,
+*    B2: 4,
+*    B3: 1,
+*  };
+*/ 
+
+const params = {
+  SERVICE: "WMS",
+  VERSION: "1.1.1",
+  REQUEST: "GetMap",
+  FORMAT: "image/png",
+  TRANSPARENT: "true",
+  STYLES: "",
+  LAYERS: "{layer}",
+  SRS: "EPSG:3857",
+  WIDTH: "512",
+  HEIGHT: "512",
+  BBOX: "{bbox-epsg-3857}",
+  ENV: {
+    B1: 6,
+    B2: 4,
+    B3: 5,
+  },
+};
+
+const tileLayer = updateURL(endpoint, params);
 
 const synchronizerConfig = {
   disableUnify: false,
-  disableTerain: true,
+  disableTerain: false,
   token:
     "pk.eyJ1IjoiaGVsc2lua2kiLCJhIjoiY2puZW5rZ3N6MGRzYzNwb3drOW12MWEzdyJ9.IZC03hW3hKtBcbMgD0_KPw",
   bounds: [

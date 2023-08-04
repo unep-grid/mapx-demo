@@ -43,7 +43,7 @@ const App = () => {
 
   return e(reactSplitGrid, {
     render: ({ getGridProps, getGutterProps }) =>
-      e("div", { key: "grid", className: "layout grid", ...getGridProps() }, [
+      e("div", { key: "grid", className: "layout grid grid-1x2 grid-sidebar", ...getGridProps() }, [
         e(
           "div",
           { className: "config padding", key: "colviews" },

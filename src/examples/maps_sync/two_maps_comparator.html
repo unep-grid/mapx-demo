@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/grid.css" />
     <link rel="stylesheet" href="./style.css" />
-    <link rel="stylesheet" href="./style_2_maps.css" />
     <link
       href="
 https://cdn.jsdelivr.net/npm/mapbox-gl@2.15.0/dist/mapbox-gl.min.css
@@ -18,17 +18,17 @@ https://cdn.jsdelivr.net/npm/mapbox-gl@2.15.0/dist/mapbox-gl.min.css
   <body>
     <header>
       <h1>2 Maps Comparator</h1>
-      <h2>Comparision between multiple maps, using a double slider</h2>
+      <h2>Comparision between multiple maps, using a slider</h2>
       <p>[draft] using mapbox directly and mapx style</p>
     </header>
-    <main id="base" class="grid">
+    <main id="base" class="grid grid-1x2 grid-thin">
       <div class="container a">
-        <div class="year"><span>2016</span></div>
+        <div class="year"><span>1986</span></div>
         <div id="a" class="map"></div>
       </div>
       <div class="gutter-col gutter-col-1"></div>
       <div class="container b">
-        <div class="year"><span>2017</span></div>
+        <div class="year"><span>2001</span></div>
         <div id="b" class="map"></div>
       </div>
     </main>

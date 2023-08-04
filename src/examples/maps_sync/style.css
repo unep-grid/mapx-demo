@@ -1,41 +1,5 @@
 
 
-.grid {
-  flex-grow: 1;
-  display: grid;
-  min-height: 1px;
-  grid-template-rows: 1fr 10px 1fr;
-  grid-template-columns: 1fr 10px 1fr;
-  border: 10px solid #efefef;
-}
-
-.gutter-col,
-.gutter-row {
-  z-index: 2;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-color: #efefef;
-}
-
-.gutter-col {
-  grid-row: 1/-1;
-  cursor: col-resize;
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==");
-}
-
-.gutter-row {
-  grid-column: 1/-1;
-  cursor: row-resize;
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=");
-}
-
-.gutter-col-1 {
-  grid-column: 2;
-}
-.gutter-row-1 {
-  grid-row: 2;
-}
-
 .container {
   top: 0;
   left: 0;
