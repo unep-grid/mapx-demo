@@ -84,7 +84,7 @@ export class MapSync {
     map.addSource(`${layerConfig.layer}-src`, {
       type: "raster",
       tiles: [layerConfig.tilesUrl.replace("{layer}", layerConfig.layer)],
-      tileSize: 256,
+      tileSize: 512,
     });
     map.addLayer({
       id: layerConfig.layer,

@@ -1,0 +1,9 @@
+.grid {
+  flex-grow: 1;
+  display: grid;
+  min-height: 1px;
+  grid-template-columns: 1fr 10px 1fr;
+  grid-template-rows: 1fr;
+  border: 10px solid #efefef;
+}
+
