@@ -2,7 +2,7 @@ import { MapSync } from "./mapsync.js";
 import { color_light as style } from "./mapbox_style.js";
 
 const tileLayer =
-  "https://datacore.unepgrid.ch/geoserver/hotspots/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fjpeg&TRANSPARENT=true&STYLES&ENV=B1%3A6%3BB2%3A4%3BB3%3A1&LAYERS={layer}&exceptions=application%2Fvnd.ogc.se_inimage&SRS=EPSG%3A3857&WIDTH=512&HEIGHT=512&BBOX={bbox-epsg-3857}";
+  "https://datacore.unepgrid.ch/geoserver/hotspots/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&STYLES&ENV=B1%3A6%3BB2%3A4%3BB3%3A1&LAYERS={layer}&exceptions=application%2Fvnd.ogc.se_inimage&SRS=EPSG%3A3857&WIDTH=512&HEIGHT=512&BBOX={bbox-epsg-3857}";
 
 const synchronizerConfig = {
   disableUnify: false,
