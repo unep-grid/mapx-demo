@@ -1,6 +1,9 @@
 # built version
 docs
 
+# archives
+_archives
+
 # Logs
 logs
 *.log
