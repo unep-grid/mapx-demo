@@ -43,7 +43,7 @@ const tileLayer = updateURL(endpoint, params);
 
 const synchronizerConfig = {
   disableUnify: false,
-  disableTerain: false,
+  disableTerain: true,
   token:
     "pk.eyJ1IjoiaGVsc2lua2kiLCJhIjoiY2puZW5rZ3N6MGRzYzNwb3drOW12MWEzdyJ9.IZC03hW3hKtBcbMgD0_KPw",
   bounds: [
@@ -61,8 +61,8 @@ const synchronizerConfig = {
     },
   ],
   pitch: 0,
-  bearing: -90,
-  projection: "globe",
+  bearing: 0,
+  //projection: "globe",
   ids: ["a", "b"],
   style: style,
   layers: [

@@ -1,5 +1,6 @@
 import splitGrid from "https://cdn.jsdelivr.net/npm/split-grid@1.0.11/+esm";
 import mapboxGl from "https://cdn.jsdelivr.net/npm/mapbox-gl@2.15.0/+esm";
+import { LatLonTicks } from "./latlongticks.js";
 
 const mapboxgl = mapboxGl;
 
@@ -30,6 +31,7 @@ export class MapSync {
   initializeMaps() {
     const ms = this;
     let maps = {};
+    ms.elBase = document.getElementById("base");
     for (const id of ms.ids) {
       const others = [...ms.ids];
       others.splice(others.indexOf(id), 1);
@@ -45,6 +47,8 @@ export class MapSync {
       maps[id].setBearing(ms.bearing);
       maps[id].setPitch(ms.pitch);
       maps[id].on("move", ms.updateMaps(id, others));
+
+      maps[id]._llt = new LatLonTicks(maps[id]);
     }
     return maps;
   }
@@ -113,22 +117,41 @@ export class MapSync {
     ms.updateSplit();
   }
 
+  get size() {
+    return this.elBase.getBoundingClientRect();
+  }
+
   updateSplit() {
     const ms = this;
     if (ms.disableUnify) {
       return;
     }
-    const elMaps = document.querySelectorAll(".map");
     cancelAnimationFrame(ms._id_drame);
     ms._id_frame = requestAnimationFrame(() => {
-      const base = document.getElementById("base").getBoundingClientRect();
-      for (const elMap of elMaps) {
+      const base = ms.size;
+      const maps = Object.values(ms.maps);
+      for (const map of maps) {
+        const elMap = map.getContainer();
         const b = elMap.parentElement.getBoundingClientRect();
         const dy = b.top - base.top;
         const dx = b.left - base.left;
-        elMap.dataset.dy = dy;
-        elMap.dataset.dx = dx;
-        elMap.style.transform = `translate(${-dx}px,${-dy}px)`;
+        const h = base.height;
+        const w = base.width;
+        const updateTransform =
+          elMap.dataset.dy !== dy || elMap.dataset.dx !== dx;
+        const updateSize = elMap.dataset.w !== w || elMap.dataset.h != h;
+        if (updateTransform) {
+          elMap.dataset.dy = dy;
+          elMap.dataset.dx = dx;
+          elMap.style.transform = `translate(${-dx}px,${-dy}px)`;
+        }
+        if (updateSize) {
+          elMap.dataset.w = w;
+          elMap.dataset.h = h;
+          elMap.style.width = `${base.width}px`;
+          elMap.style.height = `${base.height}px`;
+          map.resize();
+        }
       }
     });
   }
