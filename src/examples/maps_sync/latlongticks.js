@@ -1,4 +1,3 @@
-import * as d3 from "https://esm.run/d3";
 /**
  * Style in style_llt.css
  */
@@ -35,17 +34,10 @@ export class LatLonTicks {
 
   init() {
     const llt = this;
-
-    llt.svg = d3
-      .select(llt.map.getContainer())
-      .append("svg")
-      .style("position", "absolute")
-      .style("top", 0)
-      .style("left", 0)
-      .style("width", "100%")
-      .style("height", "100%")
-      .style("pointer-events", "none");
-
+    const container = llt.map.getContainer();
+    llt.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    llt.svg.classList.add("llt-container");
+    container.appendChild(llt.svg);
     llt.map.once("load", () => {
       llt.map.on("move", () => llt.update());
       llt.map.on("mousemove", llt.mouseDebug.bind(llt));
@@ -64,7 +56,9 @@ export class LatLonTicks {
 
   clear() {
     const llt = this;
-    llt.svg.selectAll("*").remove(); // Clear previous tick marks
+    while (llt.svg.firstChild) {
+      llt.svg.removeChild(llt.svg.firstChild);
+    }
   }
 
   get size() {
@@ -89,8 +83,52 @@ export class LatLonTicks {
     if (addLat) llt.buildTicks("lat");
     if (addLng) llt.buildTicks("lng");
   }
-
   buildTicks(type) {
+    const llt = this;
+    // Create series
+    const series = llt.createSeries(type);
+
+    // For each value in the series
+    for (let i = 0, iL = series.length; i < iL; i++) {
+      const isFirst = i === 0;
+      const item = series[i];
+      const label = item.label;
+      const tick = item.tick;
+
+      const rect = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "rect"
+      );
+      rect.classList.add("llt-outline");
+      rect.setAttribute("x", tick.x);
+      rect.setAttribute("y", tick.y);
+      rect.setAttribute("width", tick.width);
+      rect.setAttribute("height", tick.height);
+
+      llt.svg.appendChild(rect);
+
+      // Add label for major ticks
+      if (label && !isFirst) {
+        const text = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "text"
+        );
+        text.classList.add("llt-outline");
+        text.setAttribute("x", label.x);
+        text.setAttribute("y", label.y);
+        text.setAttribute(
+          "transform",
+          `rotate(${label.rotation}, ${label.x}, ${label.y})`
+        );
+        text.style.fontSize = `${label.size}px`;
+        text.textContent = label.text;
+
+        llt.svg.appendChild(text);
+      }
+    }
+  }
+
+  buildTicks_d3(type) {
     const llt = this;
 
     // Create series
