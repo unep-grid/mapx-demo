@@ -4,21 +4,21 @@ import { updateURL } from "./helpers.js";
 
 const endpoint = "https://datacore.unepgrid.ch/geoserver/hotspots/wms";
 
-/** 
-*  1: red
-*  2: green
-*  3: blue
-*  4: nir
-*  5: swir1
-*  6: swir2
-*  7: surface_temperature
-*  8: coastal_aerosol (Landsat 8 et 9 uniquement)
-*  const envOrig = {
-*    B1: 6,
-*    B2: 4,
-*    B3: 1,
-*  };
-*/ 
+/**
+ *  1: red
+ *  2: green
+ *  3: blue
+ *  4: nir
+ *  5: swir1
+ *  6: swir2
+ *  7: surface_temperature
+ *  8: coastal_aerosol (Landsat 8 et 9 uniquement)
+ *  const envOrig = {
+ *    B1: 6,
+ *    B2: 4,
+ *    B3: 1,
+ *  };
+ */
 
 const params = {
   SERVICE: "WMS",
@@ -44,6 +44,7 @@ const tileLayer = updateURL(endpoint, params);
 const synchronizerConfig = {
   disableUnify: false,
   disableTerain: true,
+  disableLatLongTicks: false,
   token:
     "pk.eyJ1IjoiaGVsc2lua2kiLCJhIjoiY2puZW5rZ3N6MGRzYzNwb3drOW12MWEzdyJ9.IZC03hW3hKtBcbMgD0_KPw",
   bounds: [

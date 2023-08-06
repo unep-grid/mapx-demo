@@ -1,20 +1,29 @@
 import * as d3 from "https://esm.run/d3";
-
+/**
+ * Style in style_llt.css
+ */
 const DEFAULT_OPTIONS = {
   ticks: {
     sizeMinor: 10,
     sizeMajor: 20,
-    nStepMinor: 50,
+    nStepMinor: 100,
     nStepMajor: 10, // nStepMinor divider
     enableLat: true,
     enableLng: true,
-    color: "#000",
-    fill: "#fff",
-    fontSize: 10,
-    labelOffset: 4,
+    fontSize: 12,
+    offsetLabel: 4,
+    offsets: {
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+    },
   },
 };
 
+/***
+ * mapbox gl plugin to display lat/long ticks in left and bottom border of the map
+ */
 export class LatLonTicks {
   constructor(map, userOptions = {}) {
     const llt = this;
@@ -37,8 +46,20 @@ export class LatLonTicks {
       .style("height", "100%")
       .style("pointer-events", "none");
 
-    llt.map.on("move", () => llt.update());
-    llt.update();
+    llt.map.once("load", () => {
+      llt.map.on("move", () => llt.update());
+      llt.map.on("mousemove", llt.mouseDebug.bind(llt));
+      llt.update();
+    });
+  }
+
+  mouseDebug(e) {
+    const llt = this;
+    const x = e.point.x;
+    const y = e.point.y;
+    const lat = e.lngLat.lat;
+    const lng = e.lngLat.lng;
+    console.log({ lat: llt.convertDMS(lat), lng: llt.convertDMS(lng), x, y });
   }
 
   clear() {
@@ -71,95 +92,95 @@ export class LatLonTicks {
 
   buildTicks(type) {
     const llt = this;
-    let minVal, maxVal;
-    const w = llt.width;
-    const h = llt.height;
-    const isLat = type === "lat";
-
-    if (type === "lat") {
-      minVal = llt.map.unproject([0, 0]).lat;
-      maxVal = llt.map.unproject([0, h]).lat;
-    } else {
-      minVal = llt.map.unproject([0, 0]).lng;
-      maxVal = llt.map.unproject([w, 0]).lng;
-    }
 
     // Create series
-    const series = llt.createSeries(
-      minVal,
-      maxVal,
-      llt.options.ticks.nStepMinor,
-      llt.options.ticks.nStepMajor
-    );
+    const series = llt.createSeries(type);
 
     // For each value in the series
-    for (const [seriesType, seriesVals] of Object.entries(series)) {
-      const isMajor = seriesType === "major";
-      const lo = llt.options.ticks.labelOffset;
-      const sizeMn = llt.options.ticks.sizeMinor;
-      const sizeMj = llt.options.ticks.sizeMajor;
-      const c1 = llt.options.ticks.color;
-      const c2 = llt.options.ticks.fill;
-      const sizeFont = llt.options.ticks.fontSize;
+    for (let i = 0, iL = series.length; i < iL; i++) {
+      const isFirst = i === 0;
+      const item = series[i];
+      const label = item.label;
+      const tick = item.tick;
 
-      const size = isMajor ? sizeMj : sizeMn;
+      llt.svg
+        .append("rect")
+        .attr("x", tick.x)
+        .attr("y", tick.y)
+        .attr("width", tick.width)
+        .attr("height", tick.height)
+        .attr("class", "outline");
 
-      for (const val of seriesVals) {
-        const d = isLat
-          ? llt.map.project([0, val]).y
-          : llt.map.project([val, 0]).x;
-        
-        // Skip if out of bounds
-        if (isLat ? d > h : d > w) {
-          continue;
-        }
-
-        if (isLat) {
-          llt.svg
-            .append("rect")
-            .attr("x", 0)
-            .attr("y", d)
-            .attr("width", size)
-            .attr("height", 1)
-            .attr("class", "outline")
-            .style("stroke", c1)
-            .style("fill", c2);
-        } else {
-          llt.svg
-            .append("rect")
-            .attr("x", d)
-            .attr("y", h - size)
-            .attr("width", 1) // Set the width to 1 to make it look like a line
-            .attr("height", size)
-            .attr("class", "outline")
-            .style("stroke", c1)
-            .style("fill", c2);
-        }
-
-        // Add label for major ticks
-        if (isMajor) {
-          const textY = isLat ? d + sizeFont / 2 : h - sizeMj - lo;
-          const textX = isLat ? size + lo : d;
-          const rotation = isLat ? 0 : -45;
-
-          llt.svg
-            .append("text")
-            .attr("x", textX) // Offset from the end of the tick
-            .attr("y", textY) // Position at the same level as the tick
-            .attr("class", "outline")
-            .attr("transform", `rotate(${rotation}, ${textX}, ${textY})`) // apply rotation
-            .style("fill", c2)
-            .style("stroke", c1)
-            .style("font-size", `${sizeFont}px`) // Adjust as needed
-            .text(llt.convertDMS(val));
-        }
+      // Add label for major ticks
+      if (label && !isFirst) {
+        llt.svg
+          .append("text")
+          .attr("x", label.x)
+          .attr("y", label.y)
+          .attr("class", "outline")
+          .attr(
+            "transform",
+            `rotate(${label.rotation}, ${label.x}, ${label.y})`
+          )
+          .style("font-size", `${label.size}px`)
+          .text(label.text);
       }
     }
   }
 
-  /**
-   * Helpers
-   */
+  createSeries(type) {
+    const llt = this;
+    const series = [];
+    const nStepMinor = llt.options.ticks.nStepMinor;
+    const nStepMajor = llt.options.ticks.nStepMajor;
+    const sizeMn = llt.options.ticks.sizeMinor;
+    const sizeMj = llt.options.ticks.sizeMajor;
+    const sizeFont = llt.options.ticks.fontSize;
+    const lo = llt.options.ticks.offsetLabel;
+    const w = llt.width;
+    const h = llt.height;
+    const isLat = type === "lat";
+
+    if (nStepMinor % nStepMajor !== 0) {
+      throw new Error("nStepMajor must be a divider of nStepMinor");
+    }
+
+    const start = 0;
+    const end = isLat ? h : w;
+
+    const step = (end - start) / nStepMinor; // Calculate step size for minor parts
+    const majorStep = nStepMinor / nStepMajor;
+
+    // Create series
+    for (let i = 0; i <= nStepMinor; i++) {
+      const pos = start + i * step;
+      const isMajor = i % majorStep === 0;
+      const size = isMajor ? sizeMj : sizeMn;
+      const tick = {
+        y: isLat ? pos : h - size,
+        x: isLat ? 0 : pos,
+        height: isLat ? 1 : size,
+        width: isLat ? size : 1,
+      };
+      const item = {
+        tick,
+      };
+      if (isMajor) {
+        const coord = llt.map.unproject([tick.x, tick.y]);
+        item.label = {
+          y: isLat ? tick.y + sizeFont / 2 : h - sizeMj - lo,
+          x: isLat ? size + lo : tick.x,
+          text: llt.convertDMS(isLat ? coord.lat : coord.lng),
+          rotation: isLat ? 0 : -45,
+          size: sizeFont,
+        };
+      }
+
+      series.push(item);
+    }
+
+    return series;
+  }
   convertDMS(degree) {
     const absDegree = Math.abs(degree);
     const degrees = Math.floor(absDegree);
@@ -168,40 +189,5 @@ export class LatLonTicks {
     const secFloat = (minFloat - minutes) * 60;
     const seconds = secFloat.toFixed(1);
     return `${degrees}° ${minutes}' ${seconds}"`;
-  }
-
-  createSeries(start, end, nStepMinor, nStepMajor) {
-    if (nStepMinor % nStepMajor !== 0) {
-      throw new Error("nStepMajor must be a divider of nStepMinor");
-    }
-
-    const step = (end - start) / nStepMinor; // Calculate step size for minor parts
-    const minorSeries = [];
-    const majorSeries = [];
-    const majorStep = nStepMinor / nStepMajor;
-
-    // Create minor series
-    for (let i = 0; i <= nStepMinor; i++) {
-      const val = start + i * step;
-      minorSeries.push(val);
-
-      // Add to major series
-      if (i % majorStep === 0) {
-        majorSeries.push(val);
-      }
-    }
-
-    // Return both series
-    return {
-      minor: minorSeries,
-      major: majorSeries,
-    };
-  }
-
-  // Similar function for building Longitude ticks
-
-  buildLongitudeTicks() {
-    // Similar approach for longitudes, but using x and swapping lat with lon
-    // ...
   }
 }

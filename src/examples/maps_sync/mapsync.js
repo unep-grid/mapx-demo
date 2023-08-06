@@ -24,6 +24,9 @@ export class MapSync {
     if (!ms.disableTerain) {
       ms.addTerrain();
     }
+    if (!ms.disableLatLongTicks) {
+      ms.addLatLongTicks();
+    }
     ms.addLayers();
     ms.initializeSplit();
   }
@@ -47,10 +50,15 @@ export class MapSync {
       maps[id].setBearing(ms.bearing);
       maps[id].setPitch(ms.pitch);
       maps[id].on("move", ms.updateMaps(id, others));
-
-      maps[id]._llt = new LatLonTicks(maps[id]);
     }
     return maps;
+  }
+
+  addLatLongTicks() {
+    const ms = this;
+    for (const id in ms.maps) {
+      ms.maps[id]._llt = new LatLonTicks(ms.maps[id]);
+    }
   }
 
   addTerrain() {
