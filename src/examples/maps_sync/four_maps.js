@@ -55,7 +55,6 @@ const synchronizerConfig = {
   bearing: -90,
   projection: "globe",
   ids: ["a", "b", "c", "d"],
-  //style: "mapbox://styles/helsinki/clilizzu2002h01qmekfxdsnu",
   style: style,
   layers: [
     {

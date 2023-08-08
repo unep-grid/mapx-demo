@@ -1,6 +1,6 @@
 import splitGrid from "https://cdn.jsdelivr.net/npm/split-grid@1.0.11/+esm";
 import mapboxGl from "https://cdn.jsdelivr.net/npm/mapbox-gl@2.15.0/+esm";
-import { LatLonTicks } from "./latlongticks.js";
+import { GeoTickGen } from "https://cdn.jsdelivr.net/npm/@fxi/geotickgen@0.0.7/+esm";
 
 const mapboxgl = mapboxGl;
 
@@ -57,7 +57,7 @@ export class MapSync {
   addLatLongTicks() {
     const ms = this;
     for (const id in ms.maps) {
-      ms.maps[id]._llt = new LatLonTicks(ms.maps[id]);
+      ms.maps[id]._gtg = new GeoTickGen(ms.maps[id]);
     }
   }
 
