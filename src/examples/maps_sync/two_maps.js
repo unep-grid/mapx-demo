@@ -1,5 +1,5 @@
 import { MapSync } from "./mapsync.js";
-import { color_light as style } from "./mapbox_style.js";
+import { color_dark as style } from "./mapbox_style.js";
 import { updateURL } from "./helpers.js";
 
 const endpoint = "https://datacore.unepgrid.ch/geoserver/hotspots/wms";

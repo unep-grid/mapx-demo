@@ -14,24 +14,15 @@ https://cdn.jsdelivr.net/npm/mapbox-gl@2.15.0/dist/mapbox-gl.min.css
       rel="stylesheet"
     />
 
-    <style>
-      /*
-       * Add margin for years 
-       */
-      .grid-2x2 .gtg-container {
-        height: calc(100% - 40px);
-      }
-    </style>
-
     <title>MAPX DRAFT</title>
   </head>
   <body>
     <header>
       <h1>4 Maps Comparator</h1>
-      <h2>Comparision between multiple maps, using a double slider</h2>
+      <h2>Comparision between multiple maps</h2>
       <p>[draft] using mapbox directly and mapx style</p>
     </header>
-    <main id="base" class="grid grid-2x2 grid-thin">
+    <main id="base" class="grid grid-1x4 grid-plain">
       <div class="container a">
         <div class="year"><span>2016</span></div>
         <div id="a" class="map"></div>
@@ -41,11 +32,12 @@ https://cdn.jsdelivr.net/npm/mapbox-gl@2.15.0/dist/mapbox-gl.min.css
         <div class="year"><span>2017</span></div>
         <div id="b" class="map"></div>
       </div>
+      <div class="gutter-col gutter-col-3"></div>
       <div class="container c">
         <div class="year"><span>2018</span></div>
         <div id="c" class="map"></div>
       </div>
-      <div class="gutter-row gutter-row-1"></div>
+      <div class="gutter-row gutter-col-5"></div>
       <div class="container d">
         <div class="year"><span>2019</span></div>
         <div id="d" class="map"></div>
@@ -56,6 +48,6 @@ https://cdn.jsdelivr.net/npm/mapbox-gl@2.15.0/dist/mapbox-gl.min.css
       <a href="/index.html">Home</a>
       <a href="http://mapx.org" target="_blank">mapx.org</a>
     </footer>
-    <script type="module" src="four_maps.js"></script>
+    <script type="module" src="four_maps_row.js"></script>
   </body>
 </html>

@@ -6,11 +6,17 @@
   position: relative;
 }
 
+.year span {
+  font-size: 1.2em;
+}
+
 .year {
   position: absolute;
   top: 0;
-  left: 0;
   right: 0;
+  left: initial;
+  width: 50px;
+  width: fit-content;
   padding: 10px;
   z-index: 1;
   background: #fff;
@@ -18,13 +24,11 @@
 
 .d .year,
 .c .year {
-  bottom: 0;
-  top: auto;
+  top: 0;
+  right: 0;
+  bottom: auto;
 }
 
-.year span {
-  font-size: 1.2em;
-}
 
 .map {
   height: 100%;

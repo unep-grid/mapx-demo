@@ -1,7 +1,6 @@
 import { MapSync } from "./mapsync.js";
 import { color_dark as style } from "./mapbox_style.js";
 import { updateURL } from "./helpers.js";
-
 const endpoint = "https://datacore.unepgrid.ch/geoserver/wms";
 
 /**
@@ -44,7 +43,7 @@ const tileLayer = updateURL(endpoint, params);
 const synchronizerConfig = {
   disableUnify: false,
   disableTerain: true,
-  disableSplit: false,
+  disableSplit: true,
   token:
     "pk.eyJ1IjoiaGVsc2lua2kiLCJhIjoiY2puZW5rZ3N6MGRzYzNwb3drOW12MWEzdyJ9.IZC03hW3hKtBcbMgD0_KPw",
   bounds: [
@@ -52,7 +51,7 @@ const synchronizerConfig = {
     [28.20091559589443, -3.1124026640005695],
   ],
   pitch: 0,
-  bearing: -90,
+  bearing: 0,
   projection: "globe",
   ids: ["a", "b", "c", "d"],
   style: style,

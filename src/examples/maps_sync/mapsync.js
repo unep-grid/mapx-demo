@@ -1,8 +1,35 @@
 import splitGrid from "https://cdn.jsdelivr.net/npm/split-grid@1.0.11/+esm";
 import mapboxGl from "https://cdn.jsdelivr.net/npm/mapbox-gl@2.15.0/+esm";
-import { GeoTickGen } from "https://cdn.jsdelivr.net/npm/@fxi/geotickgen@0.0.7/+esm";
+import { GeoTickGen } from "https://cdn.jsdelivr.net/npm/@fxi/geotickgen@0.0.8/+esm";
 
 const mapboxgl = mapboxGl;
+
+const optGtg = {
+  ticks: {
+    sizeMinor: 10,
+    sizeMajor: 20,
+    nStepMinor: 30,
+    nStepMajor: 5,
+    enableLat: true,
+    enableLng: true,
+    fontSize: 12,
+    offsetLabel: 5,
+    offsets: {
+      lat: {
+        top: 100,
+        right: 0,
+        bottom: 100,
+        left: 0,
+      },
+      lng: {
+        top: 0,
+        right: 100,
+        bottom: 0,
+        left: 100,
+      },
+    },
+  },
+};
 
 export class MapSync {
   constructor(config) {
@@ -17,6 +44,9 @@ export class MapSync {
     ms.layers = config.layers;
     ms.disableUnify = config.disableUnify;
     ms.disableTerain = config.disableTerain;
+    ms.disableSplit = config.disableSplit;
+    ms.disableLatLongTicks = config.disableLatLongTicks;
+
     ms.updating = false;
 
     mapboxgl.accessToken = ms.token;
@@ -28,7 +58,10 @@ export class MapSync {
       ms.addLatLongTicks();
     }
     ms.addLayers();
-    ms.initializeSplit();
+
+    if (!ms.disableSplit) {
+      ms.initializeSplit();
+    }
   }
 
   initializeMaps() {
@@ -57,7 +90,7 @@ export class MapSync {
   addLatLongTicks() {
     const ms = this;
     for (const id in ms.maps) {
-      ms.maps[id]._gtg = new GeoTickGen(ms.maps[id]);
+      ms.maps[id]._gtg = new GeoTickGen(ms.maps[id], optGtg);
     }
   }
 
