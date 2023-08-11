@@ -47,8 +47,8 @@ async function processJS(fullPath, destPath) {
 async function processCSS(fullPath, destPath) {
   let contents = await fs.readFile(fullPath, "utf-8");
   contents = contents.replace(
-    /url\(\"\/(?!http)/g,
-    `url(\"${config.basePath}/`
+    /url\((\"?\/(?!http))/g,
+    `url("${config.basePath}/"`
   );
   await fs.writeFile(destPath, contents, "utf-8");
 }
