@@ -1,5 +1,5 @@
-export function setUrlParams(url, params) {
-  const paramsStr = objToParams(params);
+export function setUrlParams(url, ...params) {
+  const paramsStr = objToParams(Object.assign({}, ...params));
   return `${url}?${paramsStr}`;
 }
 

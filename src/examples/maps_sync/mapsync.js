@@ -31,7 +31,7 @@ const DEFAULT_GTG = {
   },
 };
 
-const DEFAULT_CONFIG = {
+const DEFAULT_INIT = {
   /*
    * Not updatable
    */
@@ -43,67 +43,53 @@ const DEFAULT_CONFIG = {
   disableTerrain: false,
   disableSplit: false,
   disableLatLongTicks: false,
-  /**
-   * Updatable
+  /*
+   * Internal ref
    */
-  bounds: [-144.2, -55.7, 122.2, 79.5],
-  pitch: null,
-  bearing: null,
-  items: [], 
+  maps: {},
 };
 
 /**
  * MapSync is a utility class for synchronizing multiple map views, allowing for unified
  * movements, terrain rendering, lat-long ticks rendering, and layer management.
- * 
+ *
  * The class uses mapbox-gl for map rendering, and relies on split-grid for managing split views.
- * 
+ *
  * Configuration options include:
  * - Map access token, projection, style, and initial view settings (bounds, pitch, bearing).
  * - A list of HTML element ids where the maps should be rendered.
  * - Disabling certain features like terrain rendering, split view, and lat-long ticks.
  * - Layer configuration, specifying which map gets which layer and from which tile source URL.
- * 
+ *
  * Notes:
  * - The map synchronization is based on movement events on the maps.
  * - If a map fails to load a layer, it won't throw an error but will skip the layer.
  * - Maps can be split using a draggable splitter. The split views can be unified or independent.
- * 
+ *
  * @class
  * @example
- * const mapSync = new MapSync({
+ * const mapSync = new MapSync(
+ *   {
  *   token: 'YOUR_MAPBOX_TOKEN',
  *   ids: ['map1', 'map2'],
- *   items: [
- *     {map: 'map1', layer: 'layerName', tilesUrl: 'https://example.com/tiles/{layer}/{bbox-epsg-3857}'}
- *   ]
- * });
- * 
- * @author unepgrid.ch 
+ *   items :[{map:'map1',layer:{},source:{}}]
+ *   }
+ * );
+ *
+ * @author unepgrid.ch
  */
 export class MapSync {
   constructor(config = {}) {
     const ms = this;
-    config = Object.assign({}, DEFAULT_CONFIG, config);
-
-    for (const [key, value] of Object.entries(config)) {
-      ms[`_${key}`] = value;
-      Object.defineProperty(ms, key, {
-        get: () => {
-          return ms[`_${key}`];
-        },
-        set: (newValue) => {
-          if (!newValue) {
-            return;
-          }
-          ms[`_${key}`] = newValue;
-        },
-      });
-    }
-
     ms._updating = false;
+    autoProps(ms, DEFAULT_INIT, config);
     mapboxgl.accessToken = ms.token;
-    ms.maps = ms.initializeMaps();
+    ms.init().catch(console.error);
+  }
+
+  async init() {
+    const ms = this;
+    await ms.initializeMaps();
 
     if (!ms.disableTerrain) {
       ms.addTerrain();
@@ -111,24 +97,23 @@ export class MapSync {
     if (!ms.disableLatLongTicks) {
       ms.addLatLongTicks();
     }
-    ms.renderLayers();
-
     if (!ms.disableSplit) {
       ms.initializeSplit();
     }
+    ms.renderItems();
   }
 
-  initializeMaps() {
+  async initializeMaps() {
     const ms = this;
-    let maps = {};
     ms.elBase = document.getElementById("base");
     if (!ms.ids || !ms.ids.length === 0) {
       throw new Error("missing maps ui id");
     }
+    const promInit = [];
     for (const id of ms.ids) {
       const others = [...ms.ids];
       others.splice(others.indexOf(id), 1);
-      maps[id] = new mapboxgl.Map({
+      ms.maps[id] = new mapboxgl.Map({
         container: id,
         style: ms.style,
         bounds: ms.bounds,
@@ -137,11 +122,12 @@ export class MapSync {
         projection: ms.projection,
       });
       // check why it's not taken from the Map options
-      maps[id].setBearing(ms.bearing);
-      maps[id].setPitch(ms.pitch);
-      maps[id].on("move", ms.updateMaps(id, others));
+      ms.maps[id].setBearing(ms.bearing);
+      ms.maps[id].setPitch(ms.pitch);
+      ms.maps[id].on("move", ms.updateMaps(id, others));
+      promInit.push(ms.maps[id].once("load"));
     }
-    return maps;
+    await Promise.all(promInit);
   }
 
   addLatLongTicks() {
@@ -169,57 +155,39 @@ export class MapSync {
     }
   }
 
-  renderLayers() {
+  renderItems() {
     const ms = this;
     for (const item of ms.items) {
-      if (ms.maps[item.map].loaded()) {
-        ms._addLayerToMap(item, ms.maps[item.map]);
-      } else {
-        ms.maps[item.map].on("load", () => {
-          ms._addLayerToMap(item, ms.maps[item.map]);
-        });
-      }
+      ms._add_item(item, ms.maps[item.map]);
     }
   }
 
-  setLayers(items) {
+  updateItems(items) {
     const ms = this;
-    const newItems = [...items];
     ms.clear();
-    ms.items = [...newItems];
-    ms.renderLayers();
+    ms.items.push(...items);
+    ms.renderItems();
   }
 
-  _addLayerToMap(item, map) {
-    const idLayer = item.layer;
-    const idSource = `${item.layer}-src`;
+  _add_item(item, map) {
+    const idLayer = item.layer.id;
+    const idSource = item.source.id;
     const layer = map.getLayer(idLayer);
-
     if (layer) {
       return;
     }
-
-    map.addSource(idSource, {
-      type: "raster",
-      tiles: [item.tilesUrl.replace("{layer}", item.layer)],
-      tileSize: 512,
-    });
-
-    map.addLayer({
-      id: item.layer,
-      type: "raster",
-      source: idSource,
-    });
+    map.addSource(idSource, item.source);
+    map.addLayer(item.layer);
   }
 
-  _removeLayerFromMap(item, map) {
-    const idLayer = item.layer;
+  _remove_item(item, map) {
+    const idLayer = item.layer.id;
     const layer = map.getLayer(idLayer);
     if (!layer) {
       return;
     }
     map.removeLayer(idLayer);
-    const idSource = `${item.layer}-src`;
+    const idSource = item.source.id;
     const source = map.getSource(idSource);
     if (!source) {
       return;
@@ -231,7 +199,7 @@ export class MapSync {
     const ms = this;
     for (const id of ms.ids) {
       for (const item of ms.items) {
-        ms._removeLayerFromMap(item, ms.maps[id]);
+        ms._remove_item(item, ms.maps[id]);
       }
     }
     ms.items.length = 0;
@@ -312,5 +280,37 @@ export class MapSync {
       }
       ms._updating = false;
     };
+  }
+}
+
+/**
+ * Helpers
+ */
+
+/*
+ * Automatically add setter/getter
+ */
+function autoProps(target, ...config) {
+  const props = Object.assign({}, ...config);
+
+  for (const [key, value] of Object.entries(props)) {
+    // in case a storage already exits, setter is probably there too
+    if (target[`_${key}`]) {
+      target[key] = value;
+      return;
+    }
+    // store + defineProperty
+    target[`_${key}`] = value;
+    Object.defineProperty(target, key, {
+      get: () => {
+        return target[`_${key}`];
+      },
+      set: (newValue) => {
+        if (!newValue) {
+          return;
+        }
+        target[`_${key}`] = newValue;
+      },
+    });
   }
 }

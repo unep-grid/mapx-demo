@@ -29,8 +29,15 @@
   bottom: auto;
 }
 
-
 .map {
   height: 100%;
   width: 100%;
+}
+
+/**
+* Tweakpane
+*/
+:root .tp-dfwv {
+  z-index: 1;
+  width: 340px;
 }
