@@ -1,6 +1,6 @@
 import { MapSync } from "./mapsync.js";
 import { color_dark as style } from "./mapbox_style.js";
-import { updateURL } from "./helpers.js";
+import { setUrlParams } from "./helpers.js";
 
 const endpoint = "https://datacore.unepgrid.ch/geoserver/wms";
 
@@ -39,7 +39,7 @@ const params = {
   },
 };
 
-const tileLayer = updateURL(endpoint, params);
+const tileLayer = setUrlParams(endpoint, params);
 
 const synchronizerConfig = {
   disableUnify: true,
@@ -55,9 +55,9 @@ const synchronizerConfig = {
   pitch: 0,
   bearing: 0,
   projection: "globe",
-  ids: ["a", "b", "c", "d"],
   style: style,
-  layers: [
+  ids : ["a","b","c","d"],
+  items: [
     {
       map: "a",
       layer: "rs_for_asgm:mosaic_2016_kamituga",

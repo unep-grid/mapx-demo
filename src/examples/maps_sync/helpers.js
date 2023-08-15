@@ -1,9 +1,9 @@
-export function updateURL(url, params) {
+export function setUrlParams(url, params) {
   const paramsStr = objToParams(params);
   return `${url}?${paramsStr}`;
 }
 
-export function objToParams(data) {
+function objToParams(data) {
   const esc = encodeURIComponent;
   const out = [];
 

@@ -1,6 +1,6 @@
 import { MapSync } from "./mapsync.js";
 import { color_dark as style } from "./mapbox_style.js";
-import { updateURL } from "./helpers.js";
+import { setUrlParams } from "./helpers.js";
 
 const endpoint = "https://datacore.unepgrid.ch/geoserver/hotspots/wms";
 
@@ -39,7 +39,7 @@ const params = {
   },
 };
 
-const tileLayer = updateURL(endpoint, params);
+const tileLayer = setUrlParams(endpoint, params);
 
 const synchronizerConfig = {
   disableUnify: false,
@@ -47,10 +47,6 @@ const synchronizerConfig = {
   disableLatLongTicks: false,
   token:
     "pk.eyJ1IjoiaGVsc2lua2kiLCJhIjoiY2puZW5rZ3N6MGRzYzNwb3drOW12MWEzdyJ9.IZC03hW3hKtBcbMgD0_KPw",
-  bounds: [
-    [28.169073012244894, -3.1729957354298506],
-    [28.20091559589443, -3.1124026640005695],
-  ],
   bounds: [
     {
       lng: 22.094409977724553,
@@ -63,10 +59,9 @@ const synchronizerConfig = {
   ],
   pitch: 0,
   bearing: 0,
-  //projection: "globe",
-  ids: ["a", "b"],
   style: style,
-  layers: [
+  ids : ["a","b"],
+  items: [
     {
       map: "a",
       layer: "hotspots:site_0336_19860908_visual_nearest",

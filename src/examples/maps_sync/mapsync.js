@@ -4,7 +4,7 @@ import { GeoTickGen } from "https://cdn.jsdelivr.net/npm/@fxi/geotickgen@0.0.8/+
 
 const mapboxgl = mapboxGl;
 
-const optGtg = {
+const DEFAULT_GTG = {
   ticks: {
     sizeMinor: 10,
     sizeMajor: 20,
@@ -31,33 +31,87 @@ const optGtg = {
   },
 };
 
+const DEFAULT_CONFIG = {
+  /*
+   * Not updatable
+   */
+  token: null,
+  projection: "mercator",
+  style: "https://demotiles.maplibre.org/style.json",
+  ids: [],
+  disableUnify: false,
+  disableTerrain: false,
+  disableSplit: false,
+  disableLatLongTicks: false,
+  /**
+   * Updatable
+   */
+  bounds: [-144.2, -55.7, 122.2, 79.5],
+  pitch: null,
+  bearing: null,
+  items: [], 
+};
+
+/**
+ * MapSync is a utility class for synchronizing multiple map views, allowing for unified
+ * movements, terrain rendering, lat-long ticks rendering, and layer management.
+ * 
+ * The class uses mapbox-gl for map rendering, and relies on split-grid for managing split views.
+ * 
+ * Configuration options include:
+ * - Map access token, projection, style, and initial view settings (bounds, pitch, bearing).
+ * - A list of HTML element ids where the maps should be rendered.
+ * - Disabling certain features like terrain rendering, split view, and lat-long ticks.
+ * - Layer configuration, specifying which map gets which layer and from which tile source URL.
+ * 
+ * Notes:
+ * - The map synchronization is based on movement events on the maps.
+ * - If a map fails to load a layer, it won't throw an error but will skip the layer.
+ * - Maps can be split using a draggable splitter. The split views can be unified or independent.
+ * 
+ * @class
+ * @example
+ * const mapSync = new MapSync({
+ *   token: 'YOUR_MAPBOX_TOKEN',
+ *   ids: ['map1', 'map2'],
+ *   items: [
+ *     {map: 'map1', layer: 'layerName', tilesUrl: 'https://example.com/tiles/{layer}/{bbox-epsg-3857}'}
+ *   ]
+ * });
+ * 
+ * @author unepgrid.ch 
+ */
 export class MapSync {
-  constructor(config) {
+  constructor(config = {}) {
     const ms = this;
-    ms.token = config.token;
-    ms.bounds = config.bounds;
-    ms.pitch = config.pitch;
-    ms.bearing = config.bearing;
-    ms.projection = config.projection;
-    ms.ids = config.ids;
-    ms.style = config.style;
-    ms.layers = config.layers;
-    ms.disableUnify = config.disableUnify;
-    ms.disableTerain = config.disableTerain;
-    ms.disableSplit = config.disableSplit;
-    ms.disableLatLongTicks = config.disableLatLongTicks;
+    config = Object.assign({}, DEFAULT_CONFIG, config);
 
-    ms.updating = false;
+    for (const [key, value] of Object.entries(config)) {
+      ms[`_${key}`] = value;
+      Object.defineProperty(ms, key, {
+        get: () => {
+          return ms[`_${key}`];
+        },
+        set: (newValue) => {
+          if (!newValue) {
+            return;
+          }
+          ms[`_${key}`] = newValue;
+        },
+      });
+    }
 
+    ms._updating = false;
     mapboxgl.accessToken = ms.token;
     ms.maps = ms.initializeMaps();
-    if (!ms.disableTerain) {
+
+    if (!ms.disableTerrain) {
       ms.addTerrain();
     }
     if (!ms.disableLatLongTicks) {
       ms.addLatLongTicks();
     }
-    ms.addLayers();
+    ms.renderLayers();
 
     if (!ms.disableSplit) {
       ms.initializeSplit();
@@ -68,6 +122,9 @@ export class MapSync {
     const ms = this;
     let maps = {};
     ms.elBase = document.getElementById("base");
+    if (!ms.ids || !ms.ids.length === 0) {
+      throw new Error("missing maps ui id");
+    }
     for (const id of ms.ids) {
       const others = [...ms.ids];
       others.splice(others.indexOf(id), 1);
@@ -90,7 +147,7 @@ export class MapSync {
   addLatLongTicks() {
     const ms = this;
     for (const id in ms.maps) {
-      ms.maps[id]._gtg = new GeoTickGen(ms.maps[id], optGtg);
+      ms.maps[id]._gtg = new GeoTickGen(ms.maps[id], DEFAULT_GTG);
     }
   }
 
@@ -112,30 +169,72 @@ export class MapSync {
     }
   }
 
-  addLayers() {
+  renderLayers() {
     const ms = this;
-    ms.layers.forEach((l) => {
-      if (ms.maps[l.map].loaded()) {
-        ms.addLayerToMap(l, ms.maps[l.map]);
+    for (const item of ms.items) {
+      if (ms.maps[item.map].loaded()) {
+        ms._addLayerToMap(item, ms.maps[item.map]);
       } else {
-        ms.maps[l.map].on("load", () => {
-          ms.addLayerToMap(l, ms.maps[l.map]);
+        ms.maps[item.map].on("load", () => {
+          ms._addLayerToMap(item, ms.maps[item.map]);
         });
       }
+    }
+  }
+
+  setLayers(items) {
+    const ms = this;
+    const newItems = [...items];
+    ms.clear();
+    ms.items = [...newItems];
+    ms.renderLayers();
+  }
+
+  _addLayerToMap(item, map) {
+    const idLayer = item.layer;
+    const idSource = `${item.layer}-src`;
+    const layer = map.getLayer(idLayer);
+
+    if (layer) {
+      return;
+    }
+
+    map.addSource(idSource, {
+      type: "raster",
+      tiles: [item.tilesUrl.replace("{layer}", item.layer)],
+      tileSize: 512,
+    });
+
+    map.addLayer({
+      id: item.layer,
+      type: "raster",
+      source: idSource,
     });
   }
 
-  addLayerToMap(layerConfig, map) {
-    map.addSource(`${layerConfig.layer}-src`, {
-      type: "raster",
-      tiles: [layerConfig.tilesUrl.replace("{layer}", layerConfig.layer)],
-      tileSize: 512,
-    });
-    map.addLayer({
-      id: layerConfig.layer,
-      type: "raster",
-      source: `${layerConfig.layer}-src`,
-    });
+  _removeLayerFromMap(item, map) {
+    const idLayer = item.layer;
+    const layer = map.getLayer(idLayer);
+    if (!layer) {
+      return;
+    }
+    map.removeLayer(idLayer);
+    const idSource = `${item.layer}-src`;
+    const source = map.getSource(idSource);
+    if (!source) {
+      return;
+    }
+    map.removeSource(idSource);
+  }
+
+  clear() {
+    const ms = this;
+    for (const id of ms.ids) {
+      for (const item of ms.items) {
+        ms._removeLayerFromMap(item, ms.maps[id]);
+      }
+    }
+    ms.items.length = 0;
   }
 
   initializeSplit() {
@@ -200,10 +299,10 @@ export class MapSync {
   updateMaps(id, ids) {
     const ms = this;
     return () => {
-      if (ms.updating) {
+      if (ms._updating) {
         return;
       }
-      ms.updating = true;
+      ms._updating = true;
       const map = ms.maps[id];
       for (const type of ["Center", "Zoom", "Pitch", "Bearing"]) {
         const value = map[`get${type}`]();
@@ -211,7 +310,7 @@ export class MapSync {
           ms.maps[id][`set${type}`](value);
         }
       }
-      ms.updating = false;
+      ms._updating = false;
     };
   }
 }
