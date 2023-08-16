@@ -1,5 +1,11 @@
+:root {
+  --grid-back: #333;
+  --grid-gutter: #fff;
+}
+
 .grid {
   display: grid;
+  background-color: var(--grid-back);
 }
 
 .grid.grid-1x2:not(.grid-thin) {
@@ -60,6 +66,7 @@
 .gutter-col,
 .gutter-row {
   position: relative;
+  background-color: var(--grid-gutter);
 }
 
 .grid-plain .gutter-col,

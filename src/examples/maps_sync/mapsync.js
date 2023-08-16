@@ -1,6 +1,6 @@
 import splitGrid from "https://cdn.jsdelivr.net/npm/split-grid@1.0.11/+esm";
 import mapboxGl from "https://cdn.jsdelivr.net/npm/mapbox-gl@2.15.0/+esm";
-import { GeoTickGen } from "https://cdn.jsdelivr.net/npm/@fxi/geotickgen@0.0.8/+esm";
+import { GeoTickGen } from "https://cdn.jsdelivr.net/npm/@fxi/geotickgen@0.0.9/+esm";
 
 const mapboxgl = mapboxGl;
 
@@ -35,14 +35,23 @@ const DEFAULT_INIT = {
   /*
    * Not updatable
    */
-  token: null,
-  projection: "mercator",
-  style: "https://demotiles.maplibre.org/style.json",
   ids: [],
   disableUnify: false,
   disableTerrain: false,
   disableSplit: false,
   disableLatLongTicks: false,
+  mapConfig: {
+    token: null,
+    style: "https://demotiles.maplibre.org/style.json",
+    bounds: [
+      [28.099638, -3.2539833],
+      [28.2304367, -3.1108712],
+    ],
+    pitch: 65,
+    bearing: -143,
+    zoom: 15.08,
+    projection: "mercator",
+  },
   /*
    * Internal ref
    */
@@ -70,7 +79,9 @@ const DEFAULT_INIT = {
  * @example
  * const mapSync = new MapSync(
  *   {
- *   token: 'YOUR_MAPBOX_TOKEN',
+ *   map: {
+ *    token: 'YOUR_MAPBOX_TOKEN',
+ *   },
  *   ids: ['map1', 'map2'],
  *   items :[{map:'map1',layer:{},source:{}}]
  *   }
@@ -83,24 +94,23 @@ export class MapSync {
     const ms = this;
     ms._updating = false;
     autoProps(ms, DEFAULT_INIT, config);
-    mapboxgl.accessToken = ms.token;
+    mapboxgl.accessToken = ms.mapConfig.token;
     ms.init().catch(console.error);
   }
 
   async init() {
     const ms = this;
     await ms.initializeMaps();
-
-    if (!ms.disableTerrain) {
-      ms.addTerrain();
+    ms.renderItems();
+    if (!ms.disableSplit) {
+      ms.initializeSplit();
     }
     if (!ms.disableLatLongTicks) {
       ms.addLatLongTicks();
     }
-    if (!ms.disableSplit) {
-      ms.initializeSplit();
+    if (!ms.disableTerrain) {
+      ms.addTerrain();
     }
-    ms.renderItems();
   }
 
   async initializeMaps() {
@@ -109,21 +119,20 @@ export class MapSync {
     if (!ms.ids || !ms.ids.length === 0) {
       throw new Error("missing maps ui id");
     }
+    const config = ms.mapConfig;
     const promInit = [];
     for (const id of ms.ids) {
       const others = [...ms.ids];
       others.splice(others.indexOf(id), 1);
       ms.maps[id] = new mapboxgl.Map({
         container: id,
-        style: ms.style,
-        bounds: ms.bounds,
-        pitch: ms.pitch,
-        bearing: ms.bearing,
-        projection: ms.projection,
+        ...config,
       });
       // check why it's not taken from the Map options
-      ms.maps[id].setBearing(ms.bearing);
-      ms.maps[id].setPitch(ms.pitch);
+
+      //ms.maps[id].setBearing(ms.bearing);
+      //ms.maps[id].setPitch(ms.pitch);
+      //ms.maps[id].setZoom(ms.b);
       ms.maps[id].on("move", ms.updateMaps(id, others));
       promInit.push(ms.maps[id].once("load"));
     }
@@ -140,17 +149,15 @@ export class MapSync {
   addTerrain() {
     const ms = this;
     for (const id in ms.maps) {
-      ms.maps[id].on("style.load", () => {
-        ms.maps[id].addSource("mapbox-dem", {
-          type: "raster-dem",
-          url: "mapbox://mapbox.mapbox-terrain-dem-v1",
-          tileSize: 512,
-          maxzoom: 14,
-        });
-        ms.maps[id].setTerrain({
-          source: "mapbox-dem",
-          exaggeration: 1.5,
-        });
+      ms.maps[id].addSource("mapbox-dem", {
+        type: "raster-dem",
+        url: "mapbox://mapbox.mapbox-terrain-dem-v1",
+        tileSize: 512,
+        maxzoom: 14,
+      });
+      ms.maps[id].setTerrain({
+        source: "mapbox-dem",
+        exaggeration: 1.5,
       });
     }
   }
