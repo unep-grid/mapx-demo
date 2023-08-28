@@ -1,6 +1,6 @@
 :root {
-  --grid-back: #333;
-  --grid-gutter: #fff;
+  --grid-back: #fff;
+  --grid-gutter: #f2f2f2;
 }
 
 .grid {
