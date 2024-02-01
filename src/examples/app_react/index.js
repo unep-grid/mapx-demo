@@ -1,4 +1,4 @@
-import { Manager } from "https://app.mapx.org/sdk/mxsdk.modern.js";
+import { Manager } from "https://app.staging.mapx.org/sdk/mxsdk.modern.js";
 import reactSplitGrid from "https://cdn.jsdelivr.net/npm/react-split-grid@1.0.4/+esm";
 
 /**
@@ -17,7 +17,7 @@ const App = () => {
     const mapx = new Manager({
       container: mxContainer.current,
       verbose: true,
-      url: "https://app.mapx.org:443",
+      url: "https://app.staging.mapx.org:443",
       params: {
         theme: "color_light",
         project: "MX-YBJ-YYF-08R-UUR-QW6",

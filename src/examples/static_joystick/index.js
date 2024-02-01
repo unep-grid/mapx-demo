@@ -1,4 +1,4 @@
-import { Manager } from "https://app.mapx.org/sdk/mxsdk.modern.js";
+import { Manager } from "https://app.staging.mapx.org/sdk/mxsdk.modern.js";
 import nipplejs from "https://cdn.jsdelivr.net/npm/nipplejs@0.10.1/+esm";
 
 const conf = {
@@ -15,7 +15,7 @@ const conf = {
 const mapx = new Manager({
   container: document.getElementById("mapx"),
   verbose: true,
-  url: "https://app.mapx.org:443",
+  url: "https://app.staging.mapx.org:443",
   static: true,
   verbose: true,
   params: {

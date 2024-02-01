@@ -1,7 +1,7 @@
 import * as noUiSlider from "https://unpkg.com/nouislider@15.7.0/dist/nouislider.mjs";
 import TomSelect from "https://unpkg.com/tom-select@2.2.2/dist/esm/tom-select.complete.js";
 import { AnimationButton } from "./animation_button.js";
-import { Manager } from "https://app.mapx.org/sdk/mxsdk.modern.js";
+import { Manager } from "https://app.staging.mapx.org/sdk/mxsdk.modern.js";
 
 const idView = "MX-JZE39-E53LZ-0IIHP"; // somalia acled 2017
 const idAttrNum = "fatalities";
@@ -10,7 +10,7 @@ const idAttrText = "actor1";
 const mapx = new Manager({
   container: document.getElementById("mapx"),
   verbose: true,
-  url: "https://app.mapx.org:443",
+  url: "https://app.staging.mapx.org:443",
   static: true,
   verbose: true,
   params: {

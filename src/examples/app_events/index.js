@@ -1,9 +1,9 @@
-import { Manager } from "https://app.mapx.org/sdk/mxsdk.modern.js";
+import { Manager } from "https://app.staging.mapx.org/sdk/mxsdk.modern.js";
 
 const mapx = new Manager({
   container: document.getElementById("mapx"),
   verbose: true,
-  url: "https://app.mapx.org:443",
+  url: "https://app.staging.mapx.org:443",
   params: {
     theme: "color_light",
     project: "MX-YBJ-YYF-08R-UUR-QW6",

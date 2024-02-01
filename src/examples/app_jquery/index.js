@@ -1,11 +1,11 @@
-import { Manager } from "https://app.mapx.org/sdk/mxsdk.modern.js";
+import { Manager } from "https://app.staging.mapx.org/sdk/mxsdk.modern.js";
 import "https://code.jquery.com/jquery-3.7.0.slim.js";
 const $ = jQuery;
 
 const mapx = new Manager({
   container: document.getElementById("mapx"),
   verbose: true,
-  url: "https://app.mapx.org:443",
+  url: "https://app.staging.mapx.org:443",
   params: {
     closePanels: true,
     theme: "color_light",

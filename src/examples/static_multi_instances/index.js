@@ -1,4 +1,4 @@
-import { Manager } from "https://app.mapx.org/sdk/mxsdk.modern.js";
+import { Manager } from "https://app.staging.mapx.org/sdk/mxsdk.modern.js";
 
 function makeApp(mcId, viewId) {
   const mc = document.getElementById(mcId);
@@ -10,7 +10,7 @@ function makeApp(mcId, viewId) {
   const m = new Manager({
     container: mc,
     verbose: true,
-    url: "https://app.mapx.org:443",
+    url: "https://app.staging.mapx.org:443",
     static: true,
     verbose: true,
     params: {

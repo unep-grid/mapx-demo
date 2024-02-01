@@ -1,4 +1,4 @@
-import { Manager } from "https://app.mapx.org/sdk/mxsdk.modern.js";
+import { Manager } from "https://app.staging.mapx.org/sdk/mxsdk.modern.js";
 import tomSelect from "https://cdn.jsdelivr.net/npm/tom-select@2.2.2/+esm";
 
 const elSelect = document.getElementById("selectLocation");
@@ -6,7 +6,7 @@ const elSelect = document.getElementById("selectLocation");
 const mapx = new Manager({
   container: document.getElementById("mapx"),
   verbose: true,
-  url: "https://app.mapx.org:443",
+  url: "https://app.staging.mapx.org:443",
   static: true,
   verbose: true,
   params: {
