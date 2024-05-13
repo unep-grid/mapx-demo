@@ -43,23 +43,31 @@ const App = () => {
 
   return e(reactSplitGrid, {
     render: ({ getGridProps, getGutterProps }) =>
-      e("div", { key: "grid", className: "layout grid grid-1x2 grid-sidebar", ...getGridProps() }, [
-        e(
-          "div",
-          { className: "config padding", key: "colviews" },
-          e(MxViewsType, { mapx, projectId, views })
-        ),
-        e("div", {
-          key: "gutter",
-          className: "gutter-col gutter-col-1",
-          ...getGutterProps("column", 1),
-        }),
-        e("div", {
-          key: "mapx",
-          className: "mapx",
-          ref: mxContainer,
-        }),
-      ]),
+      e(
+        "div",
+        {
+          key: "grid",
+          className: "layout grid grid-1x2 grid-sidebar",
+          ...getGridProps(),
+        },
+        [
+          e(
+            "div",
+            { className: "config padding", key: "colviews" },
+            e(MxViewsType, { mapx, projectId, views })
+          ),
+          e("div", {
+            key: "gutter",
+            className: "gutter-col gutter-col-1",
+            ...getGutterProps("column", 1),
+          }),
+          e("div", {
+            key: "mapx",
+            className: "mapx",
+            ref: mxContainer,
+          }),
+        ]
+      ),
   });
 };
 
@@ -110,8 +118,12 @@ const MxType = ({ mapx, views, type }) => {
 
 const MxViewsType = ({ mapx, projectId, views }) => {
   const types = {};
+  const supportedTypes = ["vt", "rt", "cc", "gj"];
 
   for (const view of views) {
+    if (!supportedTypes.includes(view.type)) {
+      continue;
+    }
     if (!types[view.type]) {
       types[view.type] = [view];
     } else {
